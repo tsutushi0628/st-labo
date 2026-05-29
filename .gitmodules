@@ -1,0 +1,3 @@
+[submodule "firebase-kit"]
+	path = firebase-kit
+	url = https://github.com/tsutushi0628/firebase-kit.git
