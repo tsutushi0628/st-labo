@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>案B — 2カラムグリッド + ストーリー型モーダル</title>
+<style>
+  :root {
+    --bg: #fbf5ec; --surface: #fffaf2; --ink: #2a201a; --mute: #7a6a5c;
+    --orange: #ef7a32; --orange-soft: #ffd7b9;
+    --shadow: 18px 22px 60px rgba(168,110,64,0.18), -6px -8px 20px rgba(255,255,255,0.9);
+    --shadow-soft: 0 10px 28px rgba(168,110,64,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--ink); }
+  body { font-family: "Hiragino Sans","Helvetica Neue",system-ui,sans-serif; line-height: 1.75; -webkit-font-smoothing: antialiased; }
+  .page { max-width: 860px; margin: 0 auto; padding: 48px 22px 96px; }
+  .proto-tag { display:inline-block; background:var(--orange); color:#fffaf2; padding:6px 14px; border-radius:999px; font-size:12px; letter-spacing:0.06em; margin-bottom:28px; }
+  .section-title { font-size:13px; letter-spacing:0.28em; color:var(--orange); text-transform:uppercase; margin-bottom:22px; padding-left:4px; }
+
+  .works { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  .work { background:var(--surface); border-radius:22px; box-shadow:var(--shadow); overflow:hidden; cursor:pointer; transition:transform .18s ease; border:none; text-align:left; width:100%; font:inherit; color:inherit; }
+  .work:hover { transform:translateY(-3px); }
+  .work-shot { position:relative; aspect-ratio:16/10; background:var(--bg); }
+  .work-shot img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .work-body { padding:16px 18px 18px; }
+  .work-title { font-size:17px; font-weight:600; letter-spacing:-0.01em; }
+  .work-what { font-size:13px; color:var(--mute); margin-top:4px; line-height:1.55; }
+  @media (max-width:560px){ .works { grid-template-columns:1fr; } }
+
+  .overlay { position:fixed; inset:0; background:rgba(42,32,26,0.45); backdrop-filter:blur(3px); display:none; align-items:center; justify-content:center; padding:20px; z-index:50; }
+  .overlay.open { display:flex; }
+  .modal { background:var(--surface); border-radius:28px; box-shadow:var(--shadow); max-width:540px; width:100%; max-height:88vh; overflow-y:auto; position:relative; }
+  .modal-shot { aspect-ratio:16/9; background:var(--bg); border-radius:28px 28px 0 0; overflow:hidden; }
+  .modal-shot img { width:100%; height:100%; object-fit:cover; display:block; }
+  .modal-close { position:absolute; top:14px; right:14px; width:36px; height:36px; border-radius:50%; border:none; background:rgba(255,250,242,0.9); color:var(--ink); font-size:18px; cursor:pointer; box-shadow:var(--shadow-soft); }
+  .modal-body { padding:30px 32px 34px; }
+  .modal-head { display:flex; align-items:center; gap:12px; margin-bottom:22px; flex-wrap:wrap; }
+  .modal-title { font-size:24px; font-weight:600; letter-spacing:-0.01em; }
+  .badge { font-size:11px; letter-spacing:0.06em; padding:5px 12px; border-radius:999px; }
+  .badge.live { background:var(--orange); color:#fffaf2; }
+  .badge.oss { background:var(--orange-soft); color:#7a3d12; }
+  .badge.wip { background:var(--bg); color:var(--mute); border:1px solid var(--orange-soft); }
+  /* ストーリー型：縦の流れを線でつなぐ */
+  .story-step { position:relative; padding-left:26px; padding-bottom:20px; }
+  .story-step:last-of-type { padding-bottom:8px; }
+  .story-step::before { content:""; position:absolute; left:6px; top:6px; width:9px; height:9px; border-radius:50%; background:var(--orange); }
+  .story-step:not(:last-of-type)::after { content:""; position:absolute; left:10px; top:16px; bottom:0; width:1px; background:var(--orange-soft); }
+  .story-kicker { font-size:12px; color:var(--orange); font-weight:600; letter-spacing:0.04em; margin-bottom:3px; }
+  .story-text { font-size:15px; color:var(--ink); line-height:1.8; }
+  .modal-link { display:inline-block; margin-top:10px; background:var(--orange); color:#fffaf2; padding:11px 22px; border-radius:999px; font-size:13px; text-decoration:none; }
+  .modal-link.disabled { background:var(--bg); color:var(--mute); pointer-events:none; }
+  a:focus-visible, button:focus-visible { outline:2px solid var(--orange); outline-offset:3px; }
+</style>
+</head>
+<body>
+  <main class="page">
+    <span class="proto-tag">案B ・ 2カラムグリッド + ストーリー型</span>
+    <div class="section-title">Works</div>
+    <div class="works" id="works"></div>
+  </main>
+
+  <div class="overlay" id="overlay">
+    <div class="modal" id="modal" role="dialog" aria-modal="true"></div>
+  </div>
+
+  <script src="products-data.js"></script>
+  <script>
+    const works = document.getElementById('works');
+    const overlay = document.getElementById('overlay');
+    const modal = document.getElementById('modal');
+
+    PRODUCTS.forEach((p, i) => {
+      const card = document.createElement('button');
+      card.className = 'work';
+      card.innerHTML = `
+        <div class="work-shot"><img src="${p.img}" alt="" loading="lazy" onerror="this.style.display='none'"></div>
+        <div class="work-body"><div class="work-title">${p.title}</div><div class="work-what">${p.what}</div></div>`;
+      card.addEventListener('click', () => openModal(i));
+      works.appendChild(card);
+    });
+
+    function openModal(i) {
+      const p = PRODUCTS[i];
+      const linkCls = p.link ? '' : 'disabled';
+      const linkHref = p.link ? `href="${p.link}" target="_blank" rel="noopener noreferrer"` : '';
+      modal.innerHTML = `
+        <div class="modal-shot"><img src="${p.img}" alt="" onerror="this.parentElement.style.display='none'"></div>
+        <button class="modal-close" aria-label="閉じる">×</button>
+        <div class="modal-body">
+          <div class="modal-head"><span class="modal-title">${p.title}</span><span class="badge ${p.statusType}">${p.status}</span></div>
+          <div class="story-step"><div class="story-kicker">きっかけ</div><div class="story-text">${p.why}</div></div>
+          <div class="story-step"><div class="story-kicker">作ったもの</div><div class="story-text">${p.what}</div></div>
+          <div class="story-step"><div class="story-kicker">工夫したところ</div><div class="story-text">${p.how}</div></div>
+          <a class="modal-link ${linkCls}" ${linkHref}>${p.linkLabel}</a>
+        </div>`;
+      modal.querySelector('.modal-close').addEventListener('click', closeModal);
+      overlay.classList.add('open');
+    }
+    function closeModal() { overlay.classList.remove('open'); }
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  </script>
+</body>
+</html>
