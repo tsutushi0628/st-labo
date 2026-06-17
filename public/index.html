@@ -73,18 +73,27 @@
     <section class="section">
       <div class="section-title">Works</div>
       <div class="works">
-        <a class="work" data-work="gekokujo" href="https://gekokujo-online.web.app" target="_blank" rel="noopener noreferrer">
-          <div class="work-shot"><img src="img/gekokujo.png" alt="下克上オンライン のスクリーンショット" loading="lazy" onerror="this.closest('.work-shot').classList.add('is-empty'); this.remove();" /></div>
-          <div class="work-body">
-            <h3 class="work-title">下克上オンライン</h3>
-            <p class="work-desc">やりにいこっか！！「下克上」！！「ちいかわ」に出てきたゲームを再現</p>
-          </div>
-        </a>
         <a class="work" data-work="tori-lingual" href="https://ai-tori-lingual.web.app/" target="_blank" rel="noopener noreferrer">
           <div class="work-shot"><img src="img/ai-tori-lingual.png" alt="AIとりリンガル のスクリーンショット" loading="lazy" onerror="this.closest('.work-shot').classList.add('is-empty'); this.remove();" /></div>
           <div class="work-body">
             <h3 class="work-title">AIとりリンガル</h3>
             <p class="work-desc">ピッツァとパスタはなんてしゃべってるのかな？！　を論文から構築。鳥版バウリンガル</p>
+          </div>
+        </a>
+        
+        <a class="work" data-work="ai-bb-score" href="#" target="_blank" rel="noopener noreferrer">
+          <div class="work-shot"><img src="img/ai-bb-score.png" alt="バスケスコアリング のスクリーンショット" loading="lazy" onerror="this.closest('.work-shot').classList.add('is-empty'); this.remove();" /></div>
+          <div class="work-body">
+            <h3 class="work-title">AIバスケスコアリング（仮）</h3>
+            <p class="work-desc">試合のスタッツや練習の成果を記録して可視化するWebアプリ。コーチの現場運用を支える。</p>
+          </div>
+        </a>
+
+        <a class="work" data-work="gekokujo" href="https://gekokujo-online.web.app" target="_blank" rel="noopener noreferrer">
+          <div class="work-shot"><img src="img/gekokujo.png" alt="下克上オンライン のスクリーンショット" loading="lazy" onerror="this.closest('.work-shot').classList.add('is-empty'); this.remove();" /></div>
+          <div class="work-body">
+            <h3 class="work-title">下克上オンライン</h3>
+            <p class="work-desc">やりにいこっか！！「下克上」！！「ちいかわ」に出てきたゲームを再現</p>
           </div>
         </a>
         <a class="work" data-work="mieru-kun" href="https://github.com/tsutushi0628/ai-agent-mieru-kun" target="_blank" rel="noopener noreferrer">
@@ -111,15 +120,9 @@
         <a class="work" data-work="basketball-video" href="#" target="_blank" rel="noopener noreferrer">
           <div class="work-shot"><img src="img/basketball-video.png" alt="バスケ動画解析 のスクリーンショット" loading="lazy" onerror="this.closest('.work-shot').classList.add('is-empty'); this.remove();" /></div>
           <div class="work-body">
-            <h3 class="work-title">バスケ動画解析</h3>
+            <h3 class="work-title">バスケ動画解析（仮）
+            </h3>
             <p class="work-desc">試合動画から選手の検出・追跡とボールの軌道を解析する画像AIパイプライン。ローカルGPUで動かす。</p>
-          </div>
-        </a>
-        <a class="work" data-work="basketball-scoring" href="#" target="_blank" rel="noopener noreferrer">
-          <div class="work-shot"><img src="img/basketball-scoring.png" alt="バスケスコアリング のスクリーンショット" loading="lazy" onerror="this.closest('.work-shot').classList.add('is-empty'); this.remove();" /></div>
-          <div class="work-body">
-            <h3 class="work-title">バスケスコアリング（仮）</h3>
-            <p class="work-desc">試合のスタッツや練習の成果を記録して可視化するWebアプリ。コーチの現場運用を支える。</p>
           </div>
         </a>
       </div>
@@ -127,8 +130,14 @@
 
     <section class="section">
       <div class="section-title">Reading</div>
-      <p class="section-lead">考えていることは、noteに書いてる。気になるものから読んでみて。</p>
+      <p class="section-lead">noteにもつらつらまとめてるよ</p>
       <div class="readings">
+        <a class="reading" href="https://note.com/tsutushi0628/n/neacbe503d062" target="_blank" rel="noopener noreferrer">
+          <span class="reading-cat">論文駆動型開発</span>
+          <span class="reading-title">愛鳥たちがなんて言ってるのか気になったので、わかるようにしてみた（とそれをやらされたAIの苦労の）話</span>
+          <span class="reading-quote">ある日ふと考えた。論文からプロダクト作れば愛鳥たちの言葉わかるんじゃね？</span>
+          <span class="reading-meta">note.com/tsutushi0628 →</span>
+        </a>
         <a class="reading" href="https://note.com/tsutushi0628/n/nb92890b3700c" target="_blank" rel="noopener noreferrer">
           <span class="reading-cat">AI協働</span>
           <span class="reading-title">AIに2,000回怒ったら、6つの教訓を自分で学んで「やらない」から「こうする！」に変わったという話</span>
@@ -244,8 +253,8 @@
     <span class="modal-note">準備中</span>
   </template>
 
-  <template data-work-detail="basketball-scoring">
-    <h3 class="modal-title" id="work-modal-title">バスケスコアリング（仮）</h3>
+  <template data-work-detail="ai-bb-score">
+    <h3 class="modal-title" id="work-modal-title">AIバスケスコアリング（仮）</h3>
     <div class="modal-block"><span class="modal-w">Why</span><p>試合中の記録を紙やExcelでやると、書き漏れと試合後の集計がとにかく大変。対戦相手の名簿を毎試合手で入力するのもしんどい。コーチが1人で、試合に集中したまま全部記録できる形にしたかった。</p></div>
     <div class="modal-block"><span class="modal-w">What</span><p>コーチが試合中に、タブレットのコート半面を親指1本でタップして、シュート・リバウンド・ファウル・交代まで記録できるWebアプリ。試合後はボックススコア・シュートチャート・公式スコアシートのPDFがその場で出る。対戦相手の名簿は、紙のメンバー表を1枚撮るだけで取り込める。</p></div>
     <div class="modal-block"><span class="modal-w">How</span><p>スタッツの集計やファウル累積・フリースロー本数・退場の判定は、ぜんぶサーバ側のコードで決定的に計算する（AIは使わない）。AIを使うのは相手名簿の写真の読み取り1か所だけで、重複の除去や登録はコードに任せる。「公式スコアシートを完全に再現する」を設計の一本軸にしてるよ。</p></div>
