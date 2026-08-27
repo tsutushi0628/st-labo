@@ -8,6 +8,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- アクセス計測(Google アナリティクス4・measurementId は公開識別子) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SP6YD1CVD4"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-SP6YD1CVD4');</script>
 <title>Shintaro TSUKAMOTO — AIで事業開発するPdM</title>
 <meta name="description" content="AIで課題解決と事業開発するPdM、塚本慎太郎のポートフォリオ。弁護士ドットコムのAI活用／AI炎上チェッカーのPdM、クラウドサインPMM。バスケコーチとしての顔も。制作したプロダクトを紹介。" />
 <link rel="canonical" href="https://st-labo.app/" />
@@ -73,6 +76,13 @@
     <section class="section">
       <div class="section-title">Works</div>
       <div class="works">
+        <a class="work" data-work="happy-end" href="https://is-happy-end.web.app/" target="_blank" rel="noopener noreferrer">
+          <div class="work-shot"><img src="img/happy-end.png" alt="isHappyEnd のスクリーンショット" loading="lazy" onerror="this.closest('.work-shot').classList.add('is-empty'); this.remove();" /></div>
+          <div class="work-body">
+            <h3 class="work-title">isHappyEnd</h3>
+            <p class="work-desc">ハッピーに終わる本も、切なく終わる本も。読みたい結末の型から次の一冊に出会える</p>
+          </div>
+        </a>
         <a class="work" data-work="tori-lingual" href="https://ai-tori-lingual.web.app/" target="_blank" rel="noopener noreferrer">
           <div class="work-shot"><img src="img/ai-tori-lingual.png" alt="AIとりリンガル のスクリーンショット" loading="lazy" onerror="this.closest('.work-shot').classList.add('is-empty'); this.remove();" /></div>
           <div class="work-body">
@@ -243,6 +253,14 @@
     <div class="modal-block"><span class="modal-w">What</span><p>フォーカスした列が自動で広がって、ほかが縮む拡張。画面の幅に合わせて開く列数も自動で決まる。外出先のスマホからPCのVS Code画面を見て操作することもできる（スマホ操作はmac版）。</p></div>
     <div class="modal-block"><span class="modal-w">How</span><p>OSごとにウィンドウの実際の幅を測って列数を決める。指示しても画面に反映されないことがあるので、出来上がりを読み戻して確認し、崩れていたら自動で直す。スマホからの操作は、条件が一つでも崩れたら何もしない安全設計（誤入力を防ぐ）。</p></div>
     <a class="modal-cta" href="https://github.com/tsutushi0628/itsdemo-issho" target="_blank" rel="noopener noreferrer">GitHubで見る →</a>
+  </template>
+
+  <template data-work-detail="happy-end">
+    <h3 class="modal-title" id="work-modal-title">isHappyEnd</h3>
+    <div class="modal-block"><span class="modal-w">Why</span><p>読み終えたあとにどんな気持ちになりたいかで本を選びたいのに、結末の雰囲気から次の一冊を探す場がなかった。結末で選ぶことで、読みたい読後感にまっすぐ辿り着けるようにした。</p></div>
+    <div class="modal-block"><span class="modal-w">What</span><p>日本文学・少年漫画・少女漫画の結末を、完全大団円のハッピー度100から崩壊の0まで連続スコアで分類。カテゴリごとの割合をゲージで見ながら、読みたい結末に絞って最終刊へ進めるサイト。</p></div>
+    <div class="modal-block"><span class="modal-w">How</span><p>古今東西の創作物を結末の型で整理し、作品ごとのハッピー度を手がかりに探せるようにした。気になる一冊を見つけたら、そのまま最終刊に出会える導線を用意している。</p></div>
+    <a class="modal-cta" href="https://is-happy-end.web.app/" target="_blank" rel="noopener noreferrer">サイトを見る →</a>
   </template>
 
   <template data-work-detail="basketball-video">
