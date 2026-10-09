@@ -45,6 +45,21 @@ firebase deploy --only hosting
 
 `st-labo.app` への紐付けは Firebase Console のHosting設定から行う。
 
+## 掲載内容の更新チェック
+
+note の新しい記事と、各プロジェクトの `outreach/YYYY-MM_<slug>/` にある登壇のうち、LP に載っていないものを一覧にする。
+
+```bash
+node tools/check-updates.mjs              # note と登壇の両方（手元の Mac で実行）
+node tools/check-updates.mjs --note-only  # note だけ
+```
+
+- note は、LP に載っている一番新しい記事より後に出たものだけを拾う（昔載せなかった記事は出ない）
+- 載せないと決めたものは `tools/check-updates.ignore` に URL かフォルダ名を書くと出なくなる
+- 登壇は Talks のカードの `data-talk` 属性にフォルダ名を書くと「掲載済み」になる
+- `.github/workflows/check-updates.yml` が毎週月曜に note を確認し、未掲載があれば Issue を立てる
+- 掲載するときのカテゴリ語と引用文は、記事本文から人が選ぶ
+
 ## TODO
 
 - AI-torilingual のリンク先URL確定（`public/index.html` 内の `href="#"` 1箇所）
