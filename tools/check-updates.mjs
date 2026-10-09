@@ -7,7 +7,7 @@
 //
 // 標準出力に Markdown の一覧、末尾に `NEW_COUNT=<件数>` を出す。
 
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,6 +18,8 @@ const NOTE_RSS = 'https://note.com/tsutushi0628/rss';
 // 登壇資料は各プロジェクトの outreach/YYYY-MM_<slug>/ に置かれている
 const PROJECTS_DIR = process.env.ST_LABO_PROJECTS_DIR || join(homedir(), 'projects');
 const TALK_DIR_PATTERN = /^\d{4}-\d{2}_/;
+// この日より前の記事は掲載を判断済み。以降に出た記事は、載せるか ignore に書くまで毎回出す
+const NOTE_SINCE = new Date('2026-10-08T00:00:00+09:00');
 
 const IGNORE = join(ROOT, 'tools', 'check-updates.ignore');
 
@@ -33,11 +35,12 @@ const ignored = new Set(
 function decode(text) {
   return text
     .replace(/^<!\[CDATA\[|\]\]>$/g, '')
-    .replace(/&amp;/g, '&')
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(Number(dec)))
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
     .trim();
 }
 
@@ -50,22 +53,35 @@ async function findNewNotes() {
     return { title: pick('title'), link: pick('link'), date: new Date(pick('pubDate')) };
   });
   const listed = new Set([...html.matchAll(/href="(https:\/\/note\.com\/[^"]+)"/g)].map(([, url]) => url));
-  // 過去に載せなかった古い記事は対象外。掲載中で一番新しい記事より後に出たものだけを拾う
-  const newestListed = Math.max(0, ...items.filter((i) => listed.has(i.link)).map((i) => i.date.getTime()));
-  return items.filter((i) => !listed.has(i.link) && !ignored.has(i.link) && i.date.getTime() > newestListed);
+  // 日付が読めない記事は取りこぼさないよう対象に含める
+  const isRecent = (i) => Number.isNaN(i.date.getTime()) || i.date >= NOTE_SINCE;
+  return items.filter((i) => !listed.has(i.link) && !ignored.has(i.link) && isRecent(i));
 }
 
 function findNewTalks() {
   if (!existsSync(PROJECTS_DIR)) return [];
   const listed = new Set([...html.matchAll(/data-talk="([^"]+)"/g)].map(([, key]) => key));
   const found = [];
-  for (const project of readdirSync(PROJECTS_DIR, { withFileTypes: true })) {
-    if (!project.isDirectory()) continue;
-    const outreach = join(PROJECTS_DIR, project.name, 'outreach');
-    if (!existsSync(outreach)) continue;
-    for (const entry of readdirSync(outreach, { withFileTypes: true })) {
-      if (entry.isDirectory() && TALK_DIR_PATTERN.test(entry.name) && !listed.has(entry.name) && !ignored.has(entry.name)) {
-        found.push({ project: project.name, key: entry.name });
+  // シンボリックリンクのプロジェクトも拾うため stat で判定し、読めないフォルダは飛ばす
+  const isDir = (path) => {
+    try {
+      return statSync(path).isDirectory();
+    } catch {
+      return false;
+    }
+  };
+  for (const project of readdirSync(PROJECTS_DIR)) {
+    const outreach = join(PROJECTS_DIR, project, 'outreach');
+    if (!isDir(outreach)) continue;
+    let entries;
+    try {
+      entries = readdirSync(outreach);
+    } catch {
+      continue;
+    }
+    for (const name of entries) {
+      if (TALK_DIR_PATTERN.test(name) && isDir(join(outreach, name)) && !listed.has(name) && !ignored.has(name)) {
+        found.push({ project, key: name });
       }
     }
   }
@@ -74,10 +90,11 @@ function findNewTalks() {
 
 const notes = await findNewNotes();
 const talks = noteOnly ? [] : findNewTalks();
-const fmt = (d) => d.toISOString().slice(0, 10);
+const fmt = (d) => (Number.isNaN(d.getTime()) ? '日付不明' : d.toISOString().slice(0, 10));
+const escapeMd = (text) => text.replace(/([\\\[\]])/g, '\\$1');
 
 console.log('## LP に未掲載の note 記事');
-console.log(notes.length ? notes.map((n) => `- ${fmt(n.date)} [${n.title}](${n.link})`).join('\n') : '- なし');
+console.log(notes.length ? notes.map((n) => `- ${fmt(n.date)} [${escapeMd(n.title)}](${n.link})`).join('\n') : '- なし');
 if (!noteOnly) {
   console.log('\n## LP に未掲載の登壇フォルダ（data-talk に無いもの）');
   console.log(talks.length ? talks.map((t) => `- ${t.project}/outreach/${t.key}`).join('\n') : '- なし');

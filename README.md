@@ -54,10 +54,10 @@ node tools/check-updates.mjs              # note と登壇の両方（手元の 
 node tools/check-updates.mjs --note-only  # note だけ
 ```
 
-- note は、LP に載っている一番新しい記事より後に出たものだけを拾う（昔載せなかった記事は出ない）
+- note は 2026-10-08 以降に出た記事を、載せるか ignore に書くまで毎回出す（それより前の記事は判断済み扱い）
 - 載せないと決めたものは `tools/check-updates.ignore` に URL かフォルダ名を書くと出なくなる
 - 登壇は Talks のカードの `data-talk` 属性にフォルダ名を書くと「掲載済み」になる
-- `.github/workflows/check-updates.yml` が毎週月曜に note を確認し、未掲載があれば Issue を立てる
+- `.github/workflows/check-updates.yml` が毎週月曜に note を確認し、未掲載があれば Issue を立てる（開いている Issue があればコメントで追記）
 - 掲載するときのカテゴリ語と引用文は、記事本文から人が選ぶ
 
 ## TODO
