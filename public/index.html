@@ -406,13 +406,34 @@
         if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
       }
 
+      // GA4 へ「どれが見られたか」を送る（contentType＝場所、contentId＝作品の slug かリンク先）
+      function track(type, id) {
+        if (typeof gtag === 'function') gtag('event', 'select_content', { content_type: type, content_id: id });
+      }
+
       document.querySelectorAll('.work[data-work]').forEach(function (card) {
         card.addEventListener('click', function (e) {
           e.preventDefault();
           var img = card.querySelector('.work-shot img');
+          track('work', card.getAttribute('data-work'));
           openModal(card.getAttribute('data-work'), img ? img.getAttribute('src') : null);
         });
       });
+
+      // 中クリック（新しいタブで開く）も数える
+      function trackLink(e) {
+        if (e.type === 'auxclick' && e.button !== 1) return;
+        var link = e.target.closest('a[target="_blank"]');
+        if (!link || link.matches('.work[data-work]')) return;
+        var type = link.matches('.modal-cta') ? 'work_link'
+          : link.matches('[data-talk]') ? 'talk'
+          : link.matches('.reading') ? 'reading'
+          : link.closest('.foot') ? 'social'
+          : link.closest('.about-card') ? 'about' : 'other';
+        track(type, link.href);
+      }
+      document.addEventListener('click', trackLink);
+      document.addEventListener('auxclick', trackLink);
 
       closeBtn.addEventListener('click', closeModal);
       overlay.addEventListener('click', function (e) {

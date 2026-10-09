@@ -60,6 +60,17 @@ node tools/check-updates.mjs --note-only  # note だけ
 - `.github/workflows/check-updates.yml` が毎週月曜に note を確認し、未掲載があれば Issue を立てる（開いている Issue があればコメントで追記）
 - 掲載するときのカテゴリ語と引用文は、記事本文から人が選ぶ
 
+## 週次レポート（手元の Mac）
+
+```bash
+bash tools/weekly-report.sh   # 未掲載チェック＋GA4 直近7日 → reports/weekly-YYYYMMDD.md（Git 管理外）＋通知
+node tools/ga-report.mjs      # GA4 の数字だけ
+node tools/deploy-hosting.mjs # public/ を本番へ（Firebase CLI のログインが切れていても出せる）
+```
+
+- GA4 は読み取り専用サービスアカウント `ga-reader` になりすまして読む（鍵ファイルなし）。公開リポジトリなので数字は GitHub Actions に載せない
+- LP は作品カードを開いたときと外へのリンクを押したときに `select_content`（content_type＝場所、content_id＝slug かリンク先）を送る
+
 ## TODO
 
 - AI-torilingual のリンク先URL確定（`public/index.html` 内の `href="#"` 1箇所）

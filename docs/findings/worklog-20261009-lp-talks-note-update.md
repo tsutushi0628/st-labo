@@ -1,7 +1,7 @@
 # worklog 2026-10-09 LP 更新（WebDB講演・note新記事）＋更新検知の仕組み
 
 対象: st-labo（public/index.html・sitemap.xml・tools/・.github/workflows/）
-本番反映: 未（commit・push・deploy はオーナー y/n 待ち）
+本番反映: 済（push 5216337、Hosting release 1791553184379000、st-labo.app で新カード確認）
 
 ## 依頼
 - WebDB大阪講演（Frontria）と note 記事の現状を LP に反映
@@ -29,4 +29,21 @@
 
 ## 残り
 - 6月のオンライン登壇フォルダ1件が登壇候補として検知される。載せるか未裁定。
-- commit・push・deploy（firebase deploy --only hosting）はオーナー承認待ち。
+- deploy: Firebase CLI は個人アカウント未ログインで不可 → tools/deploy-hosting.mjs（Hosting REST API、gcloud 個人アカウントのトークン）で出した。スクリプトは未コミット。
+- GA4 の数字取得: gcloud 既定クライアントでの analytics スコープ要求は Google が「ブロックされたアプリ」で拒否 → 経路変更。
+  - st-labo に SA ga-reader 作成、個人アカウントに TokenCreator、analyticsdata/admin/iamcredentials API 有効化。トークンは impersonate で取れる（鍵ファイルなし）。
+  - オーナーが GA 側に SA を閲覧者で追加 → 取得可（properties/542917172）。
+  - 取得: gcloud auth print-access-token --impersonate-service-account=ga-reader@st-labo.iam.gserviceaccount.com --scopes=https://www.googleapis.com/auth/analytics.readonly --account <個人> → Data API runReport。
+  - 結果（2026-08-29〜10-09）: 8ユーザー・26セッション・25PV、エンゲージ率0、平均滞在0.04秒。流入 t.co 19／direct 6。国 US4・JP2・KR2。外部リンククリック0件。
+  - 読み: 実質的な閲覧ほぼ無し。t.co 経由の多くはリンクプレビュー等の自動アクセス疑い。JP2 は本人の可能性。
+  - 計測の穴: Works カードのモーダル開閉はイベント無し → どのカードが見られたか取れない。
+- workflow 手動実行1回: 成功、NEW_COUNT=0。
+
+## 計測追加と週次レポート（同日・続き）
+- LP: カードを開く／外部リンク押下で gtag select_content（content_type: work/work_link/talk/reading/social/about、content_id: slug か URL）。Data API の contentType/contentId で取れる（カスタムディメンション登録不要）。Playwright で6種の送信を確認。
+- tools/ga-report.mjs: 直近7日と前7日、流入元、押されたもの。
+- tools/weekly-report.sh: check-updates＋ga-report → reports/（gitignored）＋Mac 通知。
+- GA の数字は Actions に載せない（公開リポのログ・Issue は誰でも読める）。
+- 定期起動: オーナー承認済み → crontab に月曜 9:23 で weekly-report.sh。
+- push 前レビュー反映: cron 用 PATH（nvm の node）、deploy の未対応設定で停止・失敗時 ABANDONED、GA エラー本文の扱い、gcloud エラー理由を残す、中クリック計測、分類の受け皿 other、個人メール直書き廃止（git config user.email を使う tools/gcloud-token.mjs）、runReport 並列化。
+  - 見送り: GA4 拡張計測の click と二重 → 実測で拡張計測の外部リンク click は0件。select_content は分類つきなので残す。
